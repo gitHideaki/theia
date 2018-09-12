@@ -70,9 +70,9 @@ declare module '@theia/plugin' {
         readonly packageJSON: any;
 
         /**
-         * 
+         *
          */
-        readonly pluginType : PluginType;
+        readonly pluginType: PluginType;
 
         /**
          * The public API exported by this plug-in. It is an invalid action
@@ -2904,6 +2904,107 @@ declare module '@theia/plugin' {
     }
 
     /**
+	 * Represents a parameter of a callable-signature. A parameter can
+	 * have a label and a doc-comment.
+	 */
+    export class ParameterInformation {
+
+		/**
+		 * The label of this signature. Will be shown in
+		 * the UI.
+		 */
+        label: string;
+
+		/**
+		 * The human-readable doc-comment of this signature. Will be shown
+		 * in the UI but can be omitted.
+		 */
+        documentation?: string | MarkdownString;
+
+		/**
+		 * Creates a new parameter information object.
+		 *
+		 * @param label A label string.
+		 * @param documentation A doc string.
+		 */
+        constructor(label: string, documentation?: string | MarkdownString);
+    }
+
+    /**
+     * Represents the signature of something callable. A signature
+     * can have a label, like a function-name, a doc-comment, and
+     * a set of parameters.
+     */
+    export class SignatureInformation {
+
+		/**
+		 * The label of this signature. Will be shown in
+		 * the UI.
+		 */
+        label: string;
+
+		/**
+		 * The human-readable doc-comment of this signature. Will be shown
+		 * in the UI but can be omitted.
+		 */
+        documentation?: string | MarkdownString;
+
+		/**
+		 * The parameters of this signature.
+		 */
+        parameters: ParameterInformation[];
+
+		/**
+		 * Creates a new signature information object.
+		 *
+		 * @param label A label string.
+		 * @param documentation A doc string.
+		 */
+        constructor(label: string, documentation?: string | MarkdownString);
+    }
+
+	/**
+	 * Signature help represents the signature of something
+	 * callable. There can be multiple signatures but only one
+	 * active and only one active parameter.
+	 */
+    export class SignatureHelp {
+
+		/**
+		 * One or more signatures.
+		 */
+        signatures: SignatureInformation[];
+
+		/**
+		 * The active signature.
+		 */
+        activeSignature: number;
+
+		/**
+		 * The active parameter of the active signature.
+		 */
+        activeParameter: number;
+    }
+
+	/**
+	 * The signature help provider interface defines the contract between extensions and
+	 * the [parameter hints](https://code.visualstudio.com/docs/editor/intellisense)-feature.
+	 */
+    export interface SignatureHelpProvider {
+
+		/**
+		 * Provide help for the signature at the given position and document.
+		 *
+		 * @param document The document in which the command was invoked.
+		 * @param position The position at which the command was invoked.
+		 * @param token A cancellation token.
+		 * @return Signature help or a thenable that resolves to such. The lack of a result can be
+		 * signaled by returning `undefined` or `null`.
+		 */
+        provideSignatureHelp(document: TextDocument, position: Position, token: CancellationToken | undefined): ProviderResult<SignatureHelp>;
+    }
+
+    /**
      * How a [completion provider](#CompletionItemProvider) was triggered
      */
     export enum CompletionTriggerKind {
@@ -3569,6 +3670,21 @@ declare module '@theia/plugin' {
          * @return A [disposable](#Disposable) that unregisters this provider when being disposed.
          */
         export function registerCompletionItemProvider(selector: DocumentSelector, provider: CompletionItemProvider, ...triggerCharacters: string[]): Disposable;
+
+        /**
+		 * Register a signature help provider.
+		 *
+		 * Multiple providers can be registered for a language. In that case providers are sorted
+		 * by their [score](#languages.match) and called sequentially until a provider returns a
+		 * valid result.
+		 *
+		 * @param selector A selector that defines the documents this provider is applicable to.
+		 * @param provider A signature help provider.
+		 * @param triggerCharacters Trigger signature help when the user types one of the characters, like `,` or `(`.
+		 * @return A [disposable](#Disposable) that unregisters this provider when being disposed.
+		 */
+        export function registerSignatureHelpProvider(selector: DocumentSelector, provider: SignatureHelpProvider, ...triggerCharacters: string[]): Disposable;
+
     }
 
 }

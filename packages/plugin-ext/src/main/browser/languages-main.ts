@@ -82,6 +82,18 @@ export class LanguagesMainImpl implements LanguagesMain {
         }));
     }
 
+    $registerSignatureHelpSupport(handle: number, selector: SerializedDocumentFilter[], triggerCharacters: string[]): void {
+        monaco.modes.SignatureHelpProviderRegistry.register(fromLanguageSelector(selector)!, {
+            signatureHelpTriggerCharacters: triggerCharacters,
+            provideSignatureHelp: (
+                model: monaco.editor.ITextModel,
+                position: monaco.Position,
+                token: monaco.CancellationToken
+            ): monaco.Thenable<monaco.languages.SignatureHelp> =>
+                this.proxy.$provideSignatureHelp(handle, model.uri, position).then(res => res!)
+        });
+    }
+
     $clearDiagnostics(id: string): void {
         const markers = monaco.editor.getModelMarkers({ owner: id });
         const clearedEditors = new Set<string>(); // uri to resource

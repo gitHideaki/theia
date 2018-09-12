@@ -30,7 +30,8 @@ import {
     Range,
     Completion,
     CompletionResultDto,
-    MarkerData
+    MarkerData,
+    SignatureHelp
 } from './model';
 
 export interface PluginInitData {
@@ -638,6 +639,8 @@ export interface LanguagesExt {
     $provideCompletionItems(handle: number, resource: UriComponents, position: Position, context: CompletionContext): Promise<CompletionResultDto | undefined>;
     $resolveCompletionItem(handle: number, resource: UriComponents, position: Position, completion: Completion): Promise<Completion>;
     $releaseCompletionItems(handle: number, id: number): void;
+
+    $provideSignatureHelp(handle: number, resource: UriComponents, position: Position): Promise<SignatureHelp | undefined>;
 }
 
 export interface LanguagesMain {
@@ -645,6 +648,7 @@ export interface LanguagesMain {
     $setLanguageConfiguration(handle: number, languageId: string, configuration: SerializedLanguageConfiguration): void;
     $unregister(handle: number): void;
     $registerCompletionSupport(handle: number, selector: SerializedDocumentFilter[], triggerCharacters: string[], supportsResolveDetails: boolean): void;
+    $registerSignatureHelpSupport(handle: number, selector: SerializedDocumentFilter[], triggerCharacters: string[]): void;
 
     $clearDiagnostics(id: string): void;
     $changeDiagnostics(id: string, delta: [UriComponents, MarkerData[]][]): void;

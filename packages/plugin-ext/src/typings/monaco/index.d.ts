@@ -333,4 +333,5 @@ declare module monaco.modes {
     }
 
     export const SuggestRegistry: LanguageFeatureRegistry<ISuggestSupport>;
+    export const SignatureHelpProviderRegistry: LanguageFeatureRegistry<monaco.languages.SignatureHelpProvider>;
 }
